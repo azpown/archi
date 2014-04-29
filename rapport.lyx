@@ -89,8 +89,26 @@ height "1pt"
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename /net/cremi/remidelmas/projet_archi/PRES_Université_de_Bordeaux_(logo).svg
+	filename PRES_Université_de_Bordeaux_(logo).svg
 	scale 140
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset CommandInset line
+LatexCommand rule
+offset "0ex"
+width "50col%"
+height "1pt"
 
 \end_inset
 
@@ -1374,6 +1392,10 @@ Source : Computer Systems : A Programmer's Perspective, Randal E.
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Subsection
+Implémentation
 \end_layout
 
 \begin_layout Standard
