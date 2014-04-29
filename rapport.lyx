@@ -1,0 +1,2108 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language french
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Rapport : projet d'architecture des ordinateurs
+\end_layout
+
+\begin_layout Author
+DELMAS Rémi - L2 Informatique
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset CommandInset line
+LatexCommand rule
+offset "0ex"
+width "50col%"
+height "1pt"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename /net/cremi/remidelmas/projet_archi/PRES_Université_de_Bordeaux_(logo).svg
+	scale 140
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset index_print
+LatexCommand printindex
+type "idx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Introduction :
+\end_layout
+
+\begin_layout Standard
+Dans le cadre de ce projet, l'objectif était l'ajout d'instructions à la
+ machine virtuelle du 
+\family sans
+Y86
+\family default
+, ainsi que l'ajout de certaines optimisation dans son fonctionnement à
+ travers la réalistion de 3 exercices indépendants
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+PS: Désolé d'effectuer ce travail seul et ainsi de vous rajoutez du travail
+ et ce beau mois d'avril
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Une étape importante de ce projet sera également la réalisation de test
+ illustrant le fonctionnement des instructions et des optimisations, afin
+ de mettre en évidence leurs utilitées.
+\end_layout
+
+\begin_layout Standard
+Ce rapport contient également le code modifié par rapport aux fichiers standard
+ 
+\family typewriter
+HCL.
+\end_layout
+
+\begin_layout Section
+Exercice 1 : 
+\emph on
+ajout de l'instruction 
+\family typewriter
+leal
+\end_layout
+
+\begin_layout Standard
+L'intéret de cette instruction est d'effectuer une somme en plus d'un 
+\family typewriter
+rrmovl
+\family default
+, en un seul cycle, nous permettant ainsi un gain de temps a l'exécution
+\end_layout
+
+\begin_layout Standard
+Comme remarquer en cour, l'implémentation de cette instruction est quasi-identiq
+ue avec la version séquentielle et la version pipe-linée, donc 
+\emph on
+seule sera implémentée la version séquentielle.
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+leal 6(%eax), %edx 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+# Le registre edx contient le contenu de eax + 6, 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+# si eax stocke 1 alors edx reçoit 7.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Standard
+Afin de ne pas utiliser un nouvel 
+\family typewriter
+opcode
+\family default
+, nous considerons qu'elle dérive d'
+\family typewriter
+irmovl
+\family default
+, avec un 
+\family typewriter
+opcode
+\family default
+ différent.
+\end_layout
+
+\begin_layout Standard
+Cet ajoût ce fait via l'ajout de la ligne suivante dans le fichier 
+\family typewriter
+yas-grammar.lex
+\family default
+ :
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+{"leal", HPACK(I_IRMOVL, 1), 6, M_ARG, 1, 0, R_ARG, 1, 1 }
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+# ifun == 1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Standard
+Il suffit pour cette fonction, d'ajouter la valeur contenue dans 
+\family typewriter
+valC
+\family default
+ avec celle contenue dans 
+\family typewriter
+rB
+\family default
+ a l'issue de l'étage 
+\family typewriter
+FETCH
+\family default
+.
+ Les deux seuls étages qui subiront des modifications dans le code 
+\family typewriter
+HCL
+\family default
+ sont donc les étages 
+\family typewriter
+DECODE
+\family default
+ et 
+\family typewriter
+FETCH.
+\end_layout
+
+\begin_layout Standard
+Bien sûr, les lignes rajoutées dans le fichiers seront forcement avant celle
+ multiplexant 
+\family typewriter
+irmovl
+\family default
+, afin de multiplexer convenablement les deux fonctions, car dans le cas
+ contraire, le parametre ifun serai négligé et le fonctionnement dépendrait
+ uniquement de l'
+\family typewriter
+opcode
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+Le code de la fonction 
+\family typewriter
+HCL
+\family default
+ est :
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align left
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\align left
+
+\family typewriter
+		### Decode Stage ###
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+int srcB = [ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+	icode == IRMOVL && ifun == 1 : rB;
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+	...];
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+int dstE = [ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+	icode == IRMOVL && ifun == 1 : rA;
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+	...];
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align left
+
+\family typewriter
+		### Execute Stage ###
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+int aluB = [
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+	icode == IRMOVL && ifun == 1 : valB;
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+	...];
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+	
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Code 
+\family typewriter
+HCL
+\family default
+ de 
+\family typewriter
+leal
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Exercice 2 : 
+\emph on
+stratégies de prédiction statique
+\end_layout
+
+\begin_layout Standard
+La performance d'un programme dépend directement du cas où le branchement
+ pris est le bon où non, or sur une architecture pipe-linée tel que le 
+\family typewriter
+Y86
+\family default
+, le bon choix n'est pas forcement connu au bon moment.
+\end_layout
+
+\begin_layout Standard
+Le but de cet exercice est donc de mettre en place différentes stratégies
+ de prédiction, plus où moins performantes selon les cas, afin d'obtenir
+ le meilleur 
+\family typewriter
+CPI
+\family default
+ (cycle par instruction).
+\end_layout
+
+\begin_layout Subsection
+
+\emph on
+L'importance d'un système de prédiction performant
+\end_layout
+
+\begin_layout Standard
+Afin de mettre en avant l'important rôle du d'un tel système, nous analyserons
+ le fichier 
+\emph on
+cpi.ys
+\emph default
+ disponible plus bas.
+\end_layout
+
+\begin_layout Standard
+Dans ce cas, on observe une perte de temps lors de plusieurs passage sur
+ 
+\family typewriter
+\bar under
+\color red
+jn else
+\family default
+\bar default
+\color inherit
+, en effet, avec la prédiction de type 
+\family typewriter
+
+\begin_inset Quotes eld
+\end_inset
+
+branches taken
+\begin_inset Quotes erd
+\end_inset
+
+
+\family default
+, on effectue systématiquement le saut conditionnel sur l'étiquette 
+\family typewriter
+\bar under
+\color blue
+else
+\family default
+\bar default
+\color inherit
+, or dans notre cas, le choix le plus judicieux aurait été de ne jamais
+ l'effectuer.
+\end_layout
+
+\begin_layout Standard
+Ce mauvais choix entrainant l'insertion de bulles aux étages 
+\family typewriter
+DECODE
+\family default
+ et 
+\family typewriter
+EXECUTE
+\family default
+.
+\end_layout
+
+\begin_layout Standard
+A chaque erreur de prédiction , le 
+\family typewriter
+CPI
+\family default
+ augmente, et donc la performance du processeur 
+\family typewriter
+Y86
+\family default
+ diminue.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+irmovl t,%esi 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+mrmovl n,%ecx
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+loop: isubl 1,%ecx 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+jl fin
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+irmovl 1,%eax 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+mrmovl (%esi),%ebx 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+andl %ebx,%eax 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\bar under
+\color red
+jne else
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+# pair, multiplier par deux 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+addl %ebx,%ebx 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+jmp suite
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+# impair, mettre à zéro 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\bar under
+\color blue
+else
+\bar default
+\color inherit
+ : irmovl 0,%ebx
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+suite : rmmovl %ebx,(%esi) 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+iaddl 4,%esi 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+jmp loop
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+fin : halt
+\end_layout
+
+\begin_layout Plain Layout
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+.pos 0x100 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+n:
+\begin_inset space \quad{}
+\end_inset
+
+.long 7 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+t:
+\begin_inset space \quad{}
+\end_inset
+
+.long 1 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+.long 2 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+.long 6 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+.long 10 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+.long 8 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+.long 5 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+
+\begin_inset space \quad{}
+\end_inset
+
+.long 4 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+CPI.ys
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+
+\emph on
+Prédiction : 
+\begin_inset Quotes eld
+\end_inset
+
+Branches not taken
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Classiquement, le Y86 effectue toujours les sauts conditionnels, puis s'ajuste
+ en fonction du cas où le saut était bon ou non.
+\end_layout
+
+\begin_layout Standard
+Ici, on change de système de prédiction : on effectue jamais le saut, considéran
+t le prédicat comme toujours faux.
+\end_layout
+
+\begin_layout Standard
+Il nous faut différencier un branchement inconditionnel d'un branchement
+ conditionnel, il serait en effet stupide de ne pas effectuer un saut qu'on
+ sait forcement nécessaire et ainsi altérer la performance du processeur
+ Y86.
+ On ajoute donc une variable afin de determiner si la nature du saut à effectuer
+ :
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+### Code pour différencier jump conditionnel/inconditionnel 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+intsig
+\begin_inset space \quad{}
+\end_inset
+
+JUNCOND
+\begin_inset space \quad{}
+\end_inset
+
+'J_YES'
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Standard
+Les modifications à effectuer dans le code vont concerner le 
+\family typewriter
+Program Counter (PC)
+\family default
+ la propagation de la valeur du branchement ainsi que l'unitée de controle
+ logique.
+ 
+\emph on
+Les modifications à apporter sont situées a la fin de cette section.
+\end_layout
+
+\begin_layout Subsection
+Prédiction : 
+\begin_inset Quotes eld
+\end_inset
+
+Backward taken, Forward not taken
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cette technique de prédiction consiste à effectuer le saut conditionnel
+ si l'adresse du saut est inférieure a l'adresse de la prochaine instruction
+ sans saut.
+\end_layout
+
+\begin_layout Standard
+Comme dans l'exercice précédent, les modifications du fichier 
+\family typewriter
+HCL
+\family default
+ concerneront la prédiction du 
+\family typewriter
+PC
+\family default
+ et l'unitée de controle logique.
+ 
+\emph on
+Les modifications à apporter sont situées a la fin de cette section.
+\end_layout
+
+\begin_layout Subsection
+Analyse des performances
+\end_layout
+
+\begin_layout Standard
+Pour comparer les performances de ces différentes méthodes de prédictions,
+ on les a testé sur les fichiers 
+\family typewriter
+cpi.yo
+\family default
+ et 
+\family typewriter
+loop.yo
+\family default
+ (les 3 boucles) 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Disponible en annexe.
+\end_layout
+
+\end_inset
+
+.
+ Le resultat de ces tests est disponible dans le tableau ci-dessous :
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+Nom du fichier
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+CPI avec BT
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+CPI avec BNT
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+CPI avec BTFNT
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+Meilleur(s)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+cpi.yo
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.40
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.18
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.18
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BNT-BTFNT
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+loop.yo (l0)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.00
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.00
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.00
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+loop.yo (l1)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.07
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.15
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.07
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BT-BTFNT
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+loop.yo (l2)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.17
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.06
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.06
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+BNT-BTFNT
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Comparatif de performance
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Dans notre analyse, la methode 
+\family typewriter
+BTFNT
+\family default
+ adopte le comportement de 
+\family typewriter
+BT
+\family default
+ où 
+\family typewriter
+BNT
+\family default
+ selon les situations dans nos exemples, même si sur des programmes plus
+ conséquent, il arrive que cette méthode ce révele moins performantes que
+ les deux autres (si les sauts conditionnels vers une zone situés en amont
+ ce révele toujours faux par exemple).
+\end_layout
+
+\begin_layout Standard
+A travers des études plus larges, on obtient une taux de reussite du prédicat
+ d'environ 60% pour 
+\family typewriter
+BT
+\family default
+ et 40% pour 
+\family typewriter
+BNT
+\family default
+, tandis que 
+\family typewriter
+BTFNT
+\family default
+ s'en sort avec 65%
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Source : Computer Systems : A Programmer's Perspective, Randal E.
+ Bryant,David R.
+ O’Hallaron.
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+### Fetch Stage ###
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+int f_pc = [ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+#Changement de condition de saut, c'est si M_Bch que l'on effectue 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+#le jump, sur la valeur qu'on a propager dans l'alu -> dans valE.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+M_icode == JXX && M_Bch && M_ifun != JUNCOND: M_valE;
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+...];
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+# On jump uniquement si le saut est inconditionnel.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+int new_F_predPC = 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+[ f_icode == JXX && f_ifun == JUNCOND : f_valC;
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+...];
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+### Execute Stage ###
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+int aluA = [
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+#Si l'opcode est un saut, on doit propager valC jusqu'a l'étage M 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+#afin de rétablir l'adresse de la prochaine instruction a la bonne valeur
+ si nécessaire 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+E_icode in { IRMOVL, RMMOVL, MRMOVL, IOPL ,JXX} : E_valC;
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+...];
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+int aluB = [
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+#On veux propager la value sans l'altérer : on ajoute 0.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+E_icode in { RRMOVL, IRMOVL , JXX} : 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+...];
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+### Pipeline Register Control ###
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+#On change ici les conditions pour déterminer qu'un branchement est bon
+ ou non.
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+bool D_bubble =
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+(E_icode == JXX && e_Bch && E_ifun != JUNCOND);
+\end_layout
+
+\begin_layout Plain Layout
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+bool E_bubble =
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+(E_icode == JXX && e_Bch && E_ifun != JUNCOND) || 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+E_dstM in { d_srcA, d_srcB};
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+
+\family typewriter
+HCL
+\family default
+ avec 
+\family typewriter
+
+\begin_inset Quotes eld
+\end_inset
+
+Branches not taken
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Box Boxed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+### Fetch Stage ###
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+int f_pc = [ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+# Erreur de prédiction vers l'avant -> c'est valE qui nous interesse.
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+M_icode == JXX && M_ifun != JUNCOND && M_Bch 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+&& M_valE >= M_valA: M_valE; 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+# Erreur de prédiction vers l'arrière -> c'est valA qui nous interesse.
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+M_icode == JXX && M_ifun != JUNCOND && !M_Bch 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+&& M_valE < M_valA: M_valA;
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+...];
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+int new_F_predPC = [
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+# On jump uniquement si le saut est inconditionnel.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+f_icode == JXX && f_ifun == JUNCOND : f_valC; 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+# Si l'adresse de branchement est avant -> on effectue le saut 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+f_icode == JXX && f_valC < f_valP : f_valC;
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+...
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+# si l'adresse n'est pas avant -> on ne saute pas 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+1 : f_valP;];
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+### Execute Stage ###
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+int aluA = [ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+# Si l'op code est un saut, on doit propager valC jusqu'a l'étage M 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+# afin de rétablir l'adresse de la prochaine instruction a la bonne valeur
+ si nécessaire 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+E_icode in { IRMOVL, RMMOVL, MRMOVL, IOPL, JXX} : E_valC;
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+...];
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+int aluB = [ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+# On veux propager la value sans l'altérer -> on ajoute 0.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+E_icode in { RRMOVL, IRMOVL , JXX} : 0;
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+...];
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+### Pipeline Register Control ###
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+# Si mauvais branchement -> bubble D et E
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+bool D_bubble = 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+(E_icode == JXX && E_ifun != JUNCOND && 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+(E_valC < E_valA && !e_Bch||E_valC >= E_valA && e_Bch));
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\SpecialChar \textcompwordmark{}
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+bool E_bubble = 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+(E_icode == JXX && E_ifun != JUNCOND && 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+(E_valC < E_valA && !e_Bch||E_valC >= E_valA && e_Bch)) || 
+\end_layout
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+E_dstM in { d_srcA, d_srcB};
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+
+\family typewriter
+HCL
+\family default
+ avec 
+\family typewriter
+
+\begin_inset Quotes eld
+\end_inset
+
+Backward taken, Forward not taken
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
